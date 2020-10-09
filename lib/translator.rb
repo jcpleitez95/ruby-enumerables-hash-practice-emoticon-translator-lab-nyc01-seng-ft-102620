@@ -1,26 +1,31 @@
 require 'yaml'
 
-def load_library (file_path)
-  require "yaml"
-  emojis = YAML.load_file(file_path)
-  translator_hash = {:get_meaning => {}, :get_emoticon => {}}
-  emojis.each do |meaning_key, emoticons_value|
-    (translator_hash[:get_meaning])[emoticons_value[1]] = meaning_key
-    (translator_hash[:get_emoticon])[emoticons_value[0]] = emoticons_value[1]
-  end
-return translator_hash
+def load_library(file)
+ final_emoticons = {} 
+ YAML.load_file(file).each do |key, value|
+   final_emoticons[key] = {}
+   final_emoticons[key][:english] = value[0]
+   final_emoticons[key][:japanese] = value[1]
+ end
+ final_emoticons
 end
 
-def get_japanese_emoticon (file_path, emoticon) #takes Western emoticon, :) and translate it to Japanese emoticon
-  if load_library(file_path)[:get_emoticon][emoticon]
-  load_library(file_path)[:get_emoticon][emoticon]
-  else "Sorry, that emoticon was not found"
+
+def get_english_meaning(file, emoticon)
+  load_library(file).each do |key, value|
+    if value[:japanese] == emoticon
+      return key
   end
 end
+return "Sorry, that emoticon was not found"
+end
 
-def get_english_meaning (file_path, emoticon) #takes a Japanese emoticon and returns its meaning in English
-  if load_library(file_path)[:get_meaning][emoticon]
-    load_library(file_path)[:get_meaning][emoticon]
-  else "Sorry, that emoticon was not found"
-  end
+
+def get_japanese_emoticon(file, emoticon)
+  load_library(file).each do |key, value|
+    if value[:english] == emoticon
+      return value[:japanese]
+    end
+end
+return "Sorry, that emoticon was not found"
 end
